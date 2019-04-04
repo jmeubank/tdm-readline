@@ -107,6 +107,11 @@ extern int errno;
 #  define PATH_MAX	1024	/* default */
 #endif
 
+#if defined(_WIN32)
+ #define WIN32_LEAN_AND_MEAN
+ #include <windows.h>
+#endif
+
 extern void _hs_append_history_line PARAMS((int, const char *));
 
 /* history file version; currently unused */
@@ -138,6 +143,19 @@ static char *history_backupfile PARAMS((const char *));
 static char *history_tempfile PARAMS((const char *));
 static int histfile_backup PARAMS((const char *, const char *));
 static int histfile_restore PARAMS((const char *, const char *));
+
+static int
+history_rename(const char *from, const char *to)
+{
+#if defined(_WIN32)
+  if (!MoveFileEx(from, to, MOVEFILE_REPLACE_EXISTING)) {
+    return -1;
+  }
+  return 0;
+#else
+  return rename(from, to);
+#endif
+}
 
 /* Return the string that should be used in the place of this
    filename.  This only matters when you don't specify the
@@ -462,10 +480,10 @@ histfile_backup (const char *filename, const char *back)
   if ((n = readlink (filename, linkbuf, sizeof (linkbuf) - 1)) > 0)
     {
       linkbuf[n] = '\0';
-      return (rename (linkbuf, back));
+      return (history_rename (linkbuf, back));
     }
 #endif
-  return (rename (filename, back));
+  return (history_rename (filename, back));
 }
 
 /* Restore ORIG from BACKUP handling case where ORIG is a symlink
@@ -481,10 +499,10 @@ histfile_restore (const char *backup, const char *orig)
   if ((n = readlink (orig, linkbuf, sizeof (linkbuf) - 1)) > 0)
     {
       linkbuf[n] = '\0';
-      return (rename (backup, linkbuf));
+      return (history_rename (backup, linkbuf));
     }
 #endif
-  return (rename (backup, orig));
+  return (history_rename (backup, orig));
 }
 
 /* Truncate the history file FNAME, leaving only LINES trailing lines.
