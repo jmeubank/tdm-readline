@@ -128,7 +128,7 @@ linux*-*|gnu*-*|k*bsd*-gnu-*|freebsd*-gentoo)
 	SHOBJ_LD='${CC}'
 	SHOBJ_LDFLAGS='-shared -Wl,-soname,$@'
 
-	SHLIB_XLDFLAGS='-Wl,-rpath,$(libdir) -Wl,-soname,`basename $@ $(SHLIB_MINOR)`'
+	SHLIB_XLDFLAGS='-Wl,-soname,`basename $@ $(SHLIB_MINOR)`'
 	SHLIB_LIBVERSION='$(SHLIB_LIBSUFF).$(SHLIB_MAJOR)$(SHLIB_MINOR)'
 	;;
 
@@ -519,7 +519,7 @@ msdos*)
 
 cygwin*)
 	SHOBJ_LD='$(CC)'
-	SHOBJ_LDFLAGS='-shared -Wl,--enable-auto-import -Wl,--enable-auto-image-base -Wl,--export-all -Wl,--out-implib=$(@).a'
+	SHOBJ_LDFLAGS='-shared -Wl,--enable-auto-import -Wl,--enable-auto-image-base -Wl,--export-all-symbols -Wl,--out-implib=$(@).a'
 	SHLIB_LIBPREF='cyg'
 	SHLIB_LIBSUFF='dll'
 	SHLIB_LIBVERSION='$(SHLIB_DLLVERSION).$(SHLIB_LIBSUFF)'
@@ -537,7 +537,7 @@ cygwin*)
 
 mingw*)
 	SHOBJ_LD='$(CC)'
-	SHOBJ_LDFLAGS='-shared -Wl,--enable-auto-import -Wl,--enable-auto-image-base -Wl,--export-all -Wl,--out-implib=$(@).a'
+	SHOBJ_LDFLAGS='-shared -Wl,--enable-auto-import -Wl,--enable-auto-image-base -Wl,--export-all-symbols -Wl,--out-implib=$(@).a'
 	SHLIB_LIBSUFF='dll'
 	SHLIB_LIBVERSION='$(SHLIB_DLLVERSION).$(SHLIB_LIBSUFF)'
 	SHLIB_LIBS='$(TERMCAP_LIB)'
